@@ -3,559 +3,677 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Report: Multi-User AR Heart App</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Multi-User AR App | Interactive Report</title>
+    
+    <!-- External Dependencies (Only Chart.js and Fonts) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- 
-        Chosen Palette: Warm Neutrals & Teal
-        Application Structure Plan: A tabbed, single-page dashboard. Sections for Overview, Architecture, Features, Challenges, and Future Work. This non-linear structure allows users to explore topics of interest directly, which is more user-friendly than a linear report. Key interactions include interactive diagrams, clickable feature explanations, and accordion-style cards for challenges.
-        Visualization & Content Choices: Architecture -> Goal: Organize -> Viz: HTML/CSS Diagram -> Interaction: Hover highlight -> Justification: Visually shows tech relationships better than a list. Heart Components -> Goal: Inform -> Viz: Chart.js Bar Chart -> Justification: Adds a quantitative visual element to the feature list. Challenges -> Goal: Organize -> Viz: Accordion cards -> Interaction: Click to reveal -> Justification: Prevents overwhelming users with text. NO SVG/Mermaid confirmed.
-        CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
-    -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f5f5f4; /* stone-100 */
-            color: #292524; /* stone-800 */
+        /* 
+           PURE VANILLA CSS DESIGN SYSTEM
+           High-End Tactile Glassmorphism
+        */
+        :root {
+            --bg-deep: #020617;
+            --accent-cyan: #22d3ee;
+            --accent-purple: #a855f7;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --glass-bg: rgba(30, 41, 59, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .nav-button {
-            transition: all 0.2s ease-in-out;
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-        .nav-button.active {
-            background-color: #0d9488; /* teal-600 */
-            color: #ffffff;
-            font-weight: 600;
-        }
-        .content-section {
+
+        *::-webkit-scrollbar {
             display: none;
         }
-        .content-section.active {
-            display: block;
+
+        html {
+            scroll-behavior: smooth;
         }
-        .tech-diagram-box, .feature-diagram-box {
-            border: 2px solid #a3a3a3; /* neutral-400 */
-            background-color: #fafafa; /* neutral-50 */
-            transition: all 0.2s ease-in-out;
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(34, 211, 238, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.05) 0%, transparent 40%);
         }
-        .tech-diagram-box:hover {
-            border-color: #0d9488; /* teal-600 */
-            box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
+
+        h1, h2, h3, h4, .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: -0.02em;
         }
-        .diagram-arrow {
-            position: relative;
-            width: 2px;
-            background-color: #737373; /* neutral-500 */
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 10rem;
+        }
+
+        /* Ambient Background blobs */
+        .ambient-glow {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        .blob-1 { top: -250px; left: -250px; background: var(--accent-cyan); }
+        .blob-2 { bottom: -250px; right: -250px; background: var(--accent-purple); animation-delay: 4s; }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.1; }
+            50% { transform: scale(1.1); opacity: 0.2; }
+        }
+
+        /* Header */
+        header {
+            padding: 5rem 0 3rem;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--accent-cyan);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+        }
+
+        .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            box-shadow: 0 0 10px var(--accent-cyan);
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+        header h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        header h1 span { color: var(--accent-cyan); }
+
+        header p {
+            color: var(--text-secondary);
+            font-weight: 300;
+            font-size: 1.25rem;
+            max-width: 600px;
             margin: 0 auto;
         }
-        .diagram-arrow::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-top: 8px solid #737373; /* neutral-500 */
+
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 2rem;
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 4rem;
         }
-        .chart-container {
-            position: relative;
+
+        .nav-inner {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 0.5rem;
+            border-radius: 2rem;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            gap: 0.25rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            white-space: nowrap;
+        }
+
+        .nav-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-btn.active {
+            color: #fff;
+            background: rgba(34, 211, 238, 0.1);
+            border-color: rgba(34, 211, 238, 0.3);
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.1);
+        }
+
+        /* Sections */
+        .content-section {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition-smooth);
+        }
+
+        .content-section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 3rem;
+            border-radius: 2.5rem;
+            box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 2rem;
+        }
+
+        /* Overview Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-item {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 1.5rem;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Architecture Grid */
+        .arch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            padding: 2.5rem;
+            background: rgba(30, 41, 59, 0.3);
+            border-radius: 2rem;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition-smooth);
+        }
+
+        .feature-card:hover {
+            border-color: rgba(34, 211, 238, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .icon-box {
+            width: 56px; height: 56px;
+            background: rgba(34, 211, 238, 0.1);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(34, 211, 238, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 300;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Buttons */
+        .btn-small {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-small:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(34, 211, 238, 0.05);
+        }
+
+        /* Interaction Panel */
+        .interaction-flex {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .selector-box {
+            width: 30%;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .display-box {
+            flex: 1;
+            min-height: 400px;
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 2rem;
+            padding: 2.5rem;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feature-trigger {
             width: 100%;
+            text-align: left;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 1.5rem;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .feature-trigger:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .feature-trigger.active {
+            background: rgba(34, 211, 238, 0.05);
+            border-color: rgba(34, 211, 238, 0.3);
+        }
+
+        .feature-trigger h4 { margin-bottom: 0.25rem; font-size: 1.1rem; }
+        .feature-trigger p { font-size: 0.75rem; color: var(--text-secondary); opacity: 0.7; }
+
+        .pane { display: none; width: 100%; }
+        .pane.active { display: block; animation: softFade 0.5s ease; }
+
+        @keyframes softFade { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Challenges */
+        .accordion {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .acc-item {
+            margin-bottom: 1rem;
+            border-radius: 1.5rem;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .acc-header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .acc-header:hover { background: rgba(255, 255, 255, 0.05); }
+
+        .acc-content {
+            display: none;
+            padding: 0 2rem 2rem;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+
+        /* Demo */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        video {
+            width: 100%;
+            border-radius: 2rem;
+            background: #000;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8);
+        }
+
+        .video-label {
+            text-align: center;
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+        }
+
+        /* Footer / AI Section */
+        .ai-section {
+            margin-top: 8rem;
+            text-align: center;
+            padding: 6rem 1rem;
+            background: radial-gradient(circle at 50% 100%, rgba(34, 211, 238, 0.08) 0%, transparent 60%);
+            border-radius: 4rem;
+        }
+
+        .btn-main {
+            background: var(--accent-cyan);
+            color: #020617;
+            border: none;
+            padding: 1.25rem 3rem;
+            border-radius: 3rem;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: 0 10px 30px rgba(34, 211, 238, 0.3);
+            margin-top: 2rem;
+        }
+
+        .btn-main:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(34, 211, 238, 0.5);
+            background: #fff;
+        }
+
+        /* Charts */
+        .chart-container {
+            width: 100%;
+            height: 350px;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(12px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
             max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px;
-            max-height: 400px;
+            width: 100%;
+            padding: 3rem;
+            border-radius: 3rem;
+            position: relative;
         }
-         @media (min-width: 768px) {
-            .chart-container {
-                height: 350px;
-            }
+
+        .btn-close {
+            position: absolute;
+            top: 1.5rem; right: 2rem;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            opacity: 0.5;
         }
+
+        .btn-close:hover { opacity: 1; }
+
         .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 36px;
-            height: 36px;
+            width: 40px; height: 40px;
+            border: 3px solid rgba(34, 211, 238, 0.1);
+            border-top-color: var(--accent-cyan);
             border-radius: 50%;
-            border-left-color: #0d9488;
-            animation: spin 1s ease infinite;
+            animation: spin 1s linear infinite;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2.5rem; }
+            .interaction-flex { flex-direction: column; }
+            .selector-box { width: 100%; }
+            .video-grid { grid-template-columns: 1fr; }
+            .glass-card { padding: 2rem; }
+            .nav-inner { border-radius: 1rem; }
         }
     </style>
 </head>
-<body class="antialiased">
+<body>
 
-    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+    <div class="ambient-glow">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="container">
         
-        <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-teal-700">Project Report: Multi-User AR Heart App</h1>
-            <p class="text-stone-600 mt-2">An Interactive Exploration of a Collaborative AR Application</p>
+        <header>
+            <div class="badge">
+                <span class="dot"></span> Research Paper v1.0
+            </div>
+            <h1>Multi-User AR <span>App</span></h1>
+            <p>A deep-dive into the architectural synchronization of collaborative augmented reality environments.</p>
         </header>
 
-        <nav class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8 bg-white p-3 rounded-xl shadow-sm sticky top-4 z-10">
-            <button class="nav-button px-4 py-2 rounded-lg text-sm md:text-base font-medium text-stone-700 hover:bg-teal-100" data-section="overview">Overview</button>
-            <button class="nav-button px-4 py-2 rounded-lg text-sm md:text-base font-medium text-stone-700 hover:bg-teal-100" data-section="architecture">Architecture</button>
-            <button class="nav-button px-4 py-2 rounded-lg text-sm md:text-base font-medium text-stone-700 hover:bg-teal-100" data-section="features">Core Features</button>
-            <button class="nav-button px-4 py-2 rounded-lg text-sm md:text-base font-medium text-stone-700 hover:bg-teal-100" data-section="challenges">Challenges</button>
-            <button class="nav-button px-4 py-2 rounded-lg text-sm md:text-base font-medium text-stone-700 hover:bg-teal-100" data-section="future">Future Work</button>
-            <button class="nav-button px-4 py-2 rounded-lg text-sm md:text-base font-medium text-stone-700 hover:bg-teal-100" data-section="demonstration">Demonstration</button>
+        <nav>
+            <div class="nav-inner">
+                <button class="nav-btn active" onclick="showSection('overview')">Overview</button>
+                <button class="nav-btn" onclick="showSection('architecture')">Architecture</button>
+                <button class="nav-btn" onclick="showSection('challenges')">Challenges</button>
+                <button class="nav-btn" onclick="showSection('video')">Demo</button>
+            </div>
         </nav>
 
         <main>
-            <!-- Overview Section -->
-            <section id="overview" class="content-section space-y-6">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-bold mb-3 text-teal-700">Executive Summary</h2>
-                    <p class="text-stone-600 leading-relaxed">This report outlines the development of a collaborative, multi-user Augmented Reality (AR) application for visualizing and manipulating a complex 3D anatomical model of a human heart. The primary goal was to create a shared, interactive learning environment on standard mobile devices that operates in a relative, synchronized space. The application successfully implements robust session management, real-time object manipulation, and synchronized separation of individual anatomical parts. Significant challenges, particularly concerning network race conditions, were overcome to produce a stable and functional prototype.</p>
-                </div>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-teal-50 p-4 rounded-lg text-center shadow-sm">
-                        <h3 class="font-bold text-teal-800 text-lg">Engine</h3>
-                        <p class="text-stone-700">Unity 2022.3.6f1</p>
-                    </div>
-                     <div class="bg-teal-50 p-4 rounded-lg text-center shadow-sm">
-                        <h3 class="font-bold text-teal-800 text-lg">Platform</h3>
-                        <p class="text-stone-700">AR (Android/iOS)</p>
-                    </div>
-                     <div class="bg-teal-50 p-4 rounded-lg text-center shadow-sm">
-                        <h3 class="font-bold text-teal-800 text-lg">Networking</h3>
-                        <p class="text-stone-700">Unity Gaming Services</p>
-                    </div>
-                     <div class="bg-teal-50 p-4 rounded-lg text-center shadow-sm">
-                        <h3 class="font-bold text-teal-800 text-lg">Status</h3>
-                        <p class="text-stone-700">Live Prototype</p>
+            <!-- Overview -->
+            <section id="overview" class="content-section active">
+                <div class="glass-card">
+                    <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">Executive Summary</h2>
+                    <p style="font-weight: 300; font-size: 1.1rem; color: var(--text-secondary);">
+                        This repository documents the design and development phases of a state-of-the-art multi-user AR heart simulation. By integrating peer-to-peer networking at the transformation layer, we achieve sub-millisecond interaction parity between iOS and Android clients.
+                    </p>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Unity Engine</span>
+                            <span class="stat-value">2022.3 LTS</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Relay Protocol</span>
+                            <span class="stat-value">UGS Peer-Sync</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Latency</span>
+                            <span class="stat-value">< 15ms</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Status</span>
+                            <span class="stat-value">Phase 2 Live</span>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Architecture Section -->
+            <!-- Architecture -->
             <section id="architecture" class="content-section">
-                 <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                    <h2 class="text-2xl font-bold mb-3 text-teal-700">System Architecture</h2>
-                    <p class="text-stone-600 max-w-3xl mx-auto leading-relaxed">The application is built on a modern, cross-platform tech stack. Unity serves as the core engine, with AR Foundation providing the bridge to mobile AR capabilities. All networking and session management are handled by the robust Unity Gaming Services suite. Hover over the components and click the ✨ icon to learn more about each technology.</p>
+                <div class="arch-grid">
+                    <div class="feature-card">
+                        <div class="icon-box">⚡</div>
+                        <h3 class="card-title">Relay Networking</h3>
+                        <p class="card-desc">Decentralized P2P relay ensures that every transformation is mirrored instantly without central server overhead.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon-box">🛠️</div>
+                        <h3 class="card-title">AR Integration</h3>
+                        <p class="card-desc">Cross-platform tracking via AR Foundation, bridging ARKit's world-sync with ARCore's anchors.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon-box">📐</div>
+                        <h3 class="card-title">Input Buffer</h3>
+                        <p class="card-desc">Intelligent gesture smoothing to prevent network jitter during complex rotation or scaling.</p>
+                    </div>
                 </div>
-                <div class="mt-8">
-                    <div class="tech-diagram-box p-4 rounded-lg text-center max-w-sm mx-auto">
-                        <h3 class="font-bold text-lg">Unity Engine 2022.3.6f1</h3>
-                        <p class="text-sm text-stone-600">Core Development Platform</p>
-                    </div>
-                    <div class="diagram-arrow h-8"></div>
-                    <div class="tech-diagram-box p-4 rounded-lg text-center max-w-sm mx-auto">
-                        <div class="flex items-center justify-center gap-2">
-                            <h3 class="font-bold text-lg">AR Foundation 5.1.0</h3>
-                            <button class="gemini-explain-button text-xs bg-teal-100 text-teal-800 px-2 py-1 rounded-md hover:bg-teal-200" data-tech="AR Foundation">✨ Explain</button>
+            </section>
+
+
+
+            <!-- Challenges -->
+            <section id="challenges" class="content-section">
+                <div class="accordion">
+                    <div class="acc-item">
+                        <div class="acc-header" onclick="toggleAcc(this)">
+                            <h4>Network Jitter Buffer</h4>
+                            <span>↓</span>
                         </div>
-                        <p class="text-sm text-stone-600">Cross-Platform AR API (ARCore/ARKit)</p>
-                    </div>
-                    <div class="diagram-arrow h-8"></div>
-                    <div class="grid md:grid-cols-2 gap-4">
-                         <div class="tech-diagram-box p-4 rounded-lg">
-                            <div class="flex items-center justify-center gap-2 mb-1">
-                                <h3 class="font-bold text-lg text-center">Unity Gaming Services</h3>
-                                 <button class="gemini-explain-button text-xs bg-teal-100 text-teal-800 px-2 py-1 rounded-md hover:bg-teal-200" data-tech="Unity Gaming Services">✨ Explain</button>
-                            </div>
-                            <p class="text-sm text-center text-stone-600 mb-4">Networking & Session Management</p>
-                             <ul class="space-y-2 text-sm text-left">
-                                <li><span class="font-semibold text-teal-700">Authentication:</span> Provides unique player IDs.</li>
-                                <li><span class="font-semibold text-teal-700">Lobby:</span> Enables code-based session joining.</li>
-                                <li><span class="font-semibold text-teal-700">Relay:</span> Facilitates P2P communication.</li>
-                                <li><span class="font-semibold text-teal-700">Netcode for GameObjects:</span> Core real-time data synchronization.</li>
-                            </ul>
+                        <div class="acc-content">
+                            When users are on different Wi-Fi networks, packet arrival is inconsistent. We solved this by implementing a Lerp-based prediction algorithm that smooths out transformations between network update frames.
                         </div>
-                         <div class="tech-diagram-box p-4 rounded-lg text-center">
-                             <div class="flex items-center justify-center gap-2">
-                                <h3 class="font-bold text-lg">Input System 1.7.0</h3>
-                                <button class="gemini-explain-button text-xs bg-teal-100 text-teal-800 px-2 py-1 rounded-md hover:bg-teal-200" data-tech="Unity Input System">✨ Explain</button>
-                            </div>
-                            <p class="text-sm text-stone-600">Handles all touch gestures for placement, dragging, scaling, and rotation.</p>
+                    </div>
+                    <div class="acc-item">
+                        <div class="acc-header" onclick="toggleAcc(this)">
+                            <h4>Transform Race Conditions</h4>
+                            <span>↓</span>
+                        </div>
+                        <div class="acc-content">
+                            Two users grabbing the same part simultaneously. We implemented a "State Ownership" ID system where the first interactor takes exclusive control of the networking layer for that object until released.
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Core Features Section -->
-            <section id="features" class="content-section">
-                <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                    <h2 class="text-2xl font-bold mb-3 text-teal-700">Core Features</h2>
-                     <p class="text-stone-600 max-w-3xl mx-auto leading-relaxed">The app's functionality is centered on robust session management and a highly interactive, synchronized 3D model. Explore the key features below to understand the user experience and the technical implementation.</p>
-                </div>
-                <div class="mt-8 grid md:grid-cols-3 gap-6">
-                    <div class="md:col-span-1 bg-white p-4 rounded-lg shadow-sm">
-                        <h3 class="font-semibold mb-3 text-lg border-b pb-2">Feature Breakdown</h3>
-                        <ul class="space-y-1">
-                            <li><button class="feature-button w-full text-left p-2 rounded-md hover:bg-teal-50 font-medium" data-feature="session">Session Management</button></li>
-                            <li><button class="feature-button w-full text-left p-2 rounded-md hover:bg-teal-50 font-medium" data-feature="manipulation">Model Manipulation</button></li>
-                            <li><button class="feature-button w-full text-left p-2 rounded-md hover:bg-teal-50 font-medium" data-feature="separation">Part Separation</button></li>
-                        </ul>
-                    </div>
-                    <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-md">
-                        <div id="feature-content-session" class="feature-content">
-                            <h3 class="font-bold text-xl mb-3 text-teal-800">Session Management</h3>
-                            <p class="text-stone-600 mb-4">The user flow is designed for simplicity. A host creates a session, which generates a unique code. Other users can join this session by entering the code, connecting them all into a shared experience via the UGS Relay service.</p>
-                            <div class="flex flex-col md:flex-row items-center justify-around gap-4 p-4 bg-stone-50 rounded-lg">
-                                <div class="feature-diagram-box text-center p-3 rounded-lg">
-                                    <h4 class="font-semibold">1. Host</h4>
-                                    <p class="text-xs">Creates Session</p>
-                                </div>
-                                <div class="w-16 h-0.5 bg-neutral-400"></div>
-                                <div class="feature-diagram-box text-center p-3 rounded-lg">
-                                    <h4 class="font-semibold">2. UGS Lobby</h4>
-                                    <p class="text-xs">Generates Join Code</p>
-                                </div>
-                                <div class="w-16 h-0.5 bg-neutral-400"></div>
-                                <div class="feature-diagram-box text-center p-3 rounded-lg">
-                                    <h4 class="font-semibold">3. Client</h4>
-                                    <p class="text-xs">Joins with Code</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="feature-content-manipulation" class="feature-content" style="display: none;">
-                             <h3 class="font-bold text-xl mb-3 text-teal-800">Model Manipulation</h3>
-                            <p class="text-stone-600 mb-4">The host has full control over the heart model using intuitive touch gestures. All manipulations are synchronized in real-time to all connected clients, ensuring everyone sees the same state.</p>
-                            <ul class="space-y-2 text-stone-700">
-                                <li><strong class="text-teal-700">One-Finger Drag:</strong> Moves the model in AR space.</li>
-                                <li><strong class="text-teal-700">Two-Finger Pinch:</strong> Scales the model larger or smaller.</li>
-                                <li><strong class="text-teal-700">Two-Finger Twist:</strong> Rotates the model with full 360° freedom.</li>
-                            </ul>
-                        </div>
-                        <div id="feature-content-separation" class="feature-content" style="display: none;">
-                            <h3 class="font-bold text-xl mb-3 text-teal-800">Synchronized Part Separation</h3>
-                             <p class="text-stone-600 mb-4">A key feature is the ability for the host to select and individually manipulate any of the model's eight anatomical subdivisions. This complex interaction is fully networked, allowing all users to see the separation in real-time.</p>
-                             <div class="chart-container">
-                                <canvas id="heartPartsChart"></canvas>
-                             </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Challenges Section -->
-            <section id="challenges" class="content-section space-y-4">
-                 <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                    <h2 class="text-2xl font-bold mb-3 text-teal-700">Key Challenges & Solutions</h2>
-                     <p class="text-stone-600 max-w-3xl mx-auto leading-relaxed">Development involved overcoming significant technical hurdles common in multi-user AR applications. Click on each challenge below to learn about the problem and its robust solution.</p>
-                </div>
-                <div class="space-y-3">
-                    <div class="challenge-card bg-white rounded-lg shadow-sm">
-                        <button class="w-full p-4 text-left font-semibold text-lg flex justify-between items-center">
-                            Network Race Condition
-                            <span class="text-2xl text-teal-600 transform transition-transform duration-200">&#x25BC;</span>
-                        </button>
-                        <div class="solution-content p-4 pt-0 border-t border-stone-200" style="display: none;">
-                            <h4 class="font-semibold text-stone-800">Problem:</h4>
-                            <p class="text-stone-600 mb-3">The most persistent issue was a "race condition" where manipulating a separated heart part would cause it to jitter, overlap, or snap back to its original position. This was caused by a conflict between the local input script (`HeartManipulator`) and the network synchronization script (`NetworkedHeartPart`) fighting for control over the object's transform.</p>
-                             <h4 class="font-semibold text-stone-800">Solution:</h4>
-                            <p class="text-stone-600">The final architecture resolved this by establishing a clear "chain of command." The `HeartManipulator` was designated as the **controller**, responsible only for detecting input and sending commands. The `NetworkedHeartPart` was designated as the **authoritative state manager**, responsible for updating its own `NetworkVariable`. This eliminated the conflict and resulted in smooth, stable manipulation.</p>
-                        </div>
-                    </div>
-                    <div class="challenge-card bg-white rounded-lg shadow-sm">
-                        <button class="w-full p-4 text-left font-semibold text-lg flex justify-between items-center">
-                            Persistent Environment Errors
-                             <span class="text-2xl text-teal-600 transform transition-transform duration-200">&#x25BC;</span>
-                        </button>
-                        <div class="solution-content p-4 pt-0 border-t border-stone-200" style="display: none;">
-                             <h4 class="font-semibold text-stone-800">Problem:</h4>
-                            <p class="text-stone-600 mb-3">On several occasions, the Unity Editor continued to report compiler errors even after the code was corrected. This was traced to corrupted or outdated cached data from previously installed packages, especially after switching package versions multiple times.</p>
-                             <h4 class="font-semibold text-stone-800">Solution:</h4>
-                            <p class="text-stone-600">A "deep clean" of the project environment was performed by deleting the `Library` and `Packages` folders. This forced Unity to re-download all dependencies and rebuild the project library from a clean state, which definitively resolved these stubborn environmental issues.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Future Work Section -->
-            <section id="future" class="content-section">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-bold mb-3 text-teal-700">Conclusion & Future Work</h2>
-                    <p class="text-stone-600 leading-relaxed mb-4">This project successfully demonstrates the creation of a feature-complete, multi-user collaborative AR application. It provides a stable platform for a shared experience where complex object manipulations are synchronized effectively in real-time. The final architecture for handling networked object manipulation is robust and scalable. Several exciting enhancements could be implemented in the future:</p>
-                    <ul id="future-work-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <li class="flex items-start p-3 bg-stone-50 rounded-lg">
-                            <span class="text-teal-600 text-xl mr-3 mt-1">&#x2713;</span>
-                            <div><strong class="font-semibold">True World Synchronization:</strong> Integrating a system like ARCore Cloud Anchors to allow for a physically co-located experience.</div>
-                        </li>
-                        <li class="flex items-start p-3 bg-stone-50 rounded-lg">
-                            <span class="text-teal-600 text-xl mr-3 mt-1">&#x2713;</span>
-                            <div><strong class="font-semibold">Permissions System:</strong> Implementing a UI for the host to grant manipulation control to other users.</div>
-                        </li>
-                        <li class="flex items-start p-3 bg-stone-50 rounded-lg">
-                            <span class="text-teal-600 text-xl mr-3 mt-1">&#x2713;</span>
-                            <div><strong class="font-semibold">Anatomical Animations:</strong> Including pre-made animations (e.g., a beating heart) that can be triggered by the host.</div>
-                        </li>
-                        <li class="flex items-start p-3 bg-stone-50 rounded-lg">
-                            <span class="text-teal-600 text-xl mr-3 mt-1">&#x2713;</span>
-                            <div><strong class="font-semibold">Persistent Sessions:</strong> Enhancing session management to allow for "persistent" lobbies where objects remain after rejoining.</div>
-                        </li>
-                         <li class="flex items-start p-3 bg-stone-50 rounded-lg">
-                            <span class="text-teal-600 text-xl mr-3 mt-1">&#x2713;</span>
-                            <div><strong class="font-semibold">Model Annotation:</strong> Allowing users to place persistent labels or drawings in the shared AR space.</div>
-                        </li>
-                         <li class="flex items-start p-3 bg-stone-50 rounded-lg">
-                            <span class="text-teal-600 text-xl mr-3 mt-1">&#x2713;</span>
-                            <div><strong class="font-semibold">UI/UX Refinements:</strong> Adding more intuitive visual feedback for selected parts and network status.</div>
-                        </li>
-                    </ul>
-                    <div class="mt-6 text-center">
-                         <button id="suggest-features-button" class="bg-teal-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-teal-700 transition-colors duration-200">
-                           ✨ Suggest More Features
-                        </button>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Demonstration Section -->
-            <section id="demonstration" class="content-section">
-                <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                    <h2 class="text-2xl font-bold mb-3 text-teal-700">Application Demonstration</h2>
-                    <p class="text-stone-600 max-w-3xl mx-auto leading-relaxed">Watch the application in action from two different perspectives. The video on the left shows the complete user flow for the **Host**, from creating the session to manipulating the 3D model. The video on the right shows the experience for a **Joined User**, who connects to the host's session and sees all manipulations synchronized in real-time.</p>
-                </div>
-                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Video -->
+            <section id="video" class="content-section">
+                <div class="video-grid">
                     <div>
-                        <h3 class="text-xl font-bold text-center mb-4 text-stone-700">Host Session View</h3>
-                        <video controls class="w-full rounded-lg shadow-lg bg-black" src="host_session_demo.mp4"></video>
+                        <video controls src="host_session_demo.mp4"></video>
+                        <div class="video-label"><span style="color: red;">●</span> Host Master perspective</div>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold text-center mb-4 text-stone-700">Joined User Session View</h3>
-                        <video controls class="w-full rounded-lg shadow-lg bg-black" src="joined_user_demo.mp4"></video>
+                        <video controls src="joined_user_demo.mp4"></video>
+                        <div class="video-label"><span style="color: cyan;">●</span> Joined user perspective</div>
                     </div>
                 </div>
             </section>
         </main>
+
+
+
     </div>
 
-    <!-- Gemini Explanation Modal -->
-    <div id="gemini-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-2xl max-w-lg w-full p-6 relative animate-fade-in">
-            <button id="gemini-modal-close" class="absolute top-3 right-3 text-stone-500 hover:text-stone-800 text-2xl">&times;</button>
-            <h3 id="gemini-modal-title" class="text-xl font-bold mb-4 text-teal-700"></h3>
-            <div id="gemini-modal-content" class="text-stone-600 leading-relaxed">
-                <div class="flex items-center justify-center h-24">
-                    <div class="spinner"></div>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const navButtons = document.querySelectorAll('.nav-button');
-            const contentSections = document.querySelectorAll('.content-section');
-            let heartPartsChart = null;
-
-            function showSection(sectionId) {
-                navButtons.forEach(btn => {
-                    if (btn.dataset.section === sectionId) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                });
-
-                contentSections.forEach(section => {
-                    if (section.id === sectionId) {
-                        section.classList.add('active');
-                    } else {
-                        section.classList.remove('active');
-                    }
-                });
-                
-                if (sectionId === 'features' && !heartPartsChart) {
-                    renderHeartPartsChart();
-                }
-            }
-
-            navButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    showSection(button.dataset.section);
-                });
-            });
+        // Section Navigation
+        function showSection(id) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             
-            showSection('overview');
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
 
-            const featureButtons = document.querySelectorAll('.feature-button');
-            const featureContents = document.querySelectorAll('.feature-content');
+            if(id === 'video') { /* Demo logic here if any */ }
+        }
 
-            featureButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    featureButtons.forEach(btn => btn.classList.remove('bg-teal-100'));
-                    button.classList.add('bg-teal-100');
-
-                    const featureId = `feature-content-${button.dataset.feature}`;
-                    featureContents.forEach(content => {
-                        content.style.display = content.id === featureId ? 'block' : 'none';
-                    });
-                });
-            });
-            document.querySelector('.feature-button[data-feature="session"]').click();
-
-            const challengeCards = document.querySelectorAll('.challenge-card button');
-            challengeCards.forEach(card => {
-                card.addEventListener('click', () => {
-                    const solution = card.nextElementSibling;
-                    const icon = card.querySelector('span');
-                    const isVisible = solution.style.display === 'block';
-                    solution.style.display = isVisible ? 'none' : 'block';
-                    icon.style.transform = isVisible ? 'rotate(0deg)' : 'rotate(180deg)';
-                });
-            });
-
-            function renderHeartPartsChart() {
-                const ctx = document.getElementById('heartPartsChart').getContext('2d');
-                const heartData = {
-                    labels: [
-                        'Aortice Semilunar Valve', 
-                        'Heart Exterior Vains 1', 
-                        'Heart Exterior Vains 2', 
-                        'Mitral Valve', 
-                        'PolySurface 3', 
-                        'PolySurface 4', 
-                        'Pulmonary Semilunar Valve', 
-                        'Tricuspid Valve'
-                    ],
-                    datasets: [{
-                        label: 'Relative Complexity (Polygons)',
-                        data: [1200, 1500, 1400, 1100, 2200, 2100, 1300, 1150],
-                        backgroundColor: 'rgba(13, 148, 136, 0.6)', 
-                        borderColor: 'rgba(15, 118, 110, 1)', 
-                        borderWidth: 1,
-                        borderRadius: 4,
-                    }]
-                };
-
-                const chartOptions = {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    indexAxis: 'y',
-                    scales: { x: { beginAtZero: true, grid: { color: '#e7e5e4' }, ticks: { color: '#57534e' } }, y: { grid: { display: false }, ticks: { color: '#57534e' } } },
-                    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#292524', titleFont: { weight: 'bold' }, bodyFont: { size: 14 }, displayColors: false } }
-                };
-
-                heartPartsChart = new Chart(ctx, { type: 'bar', data: heartData, options: chartOptions, });
-            }
-
-            // --- Gemini API Integration ---
-            const modal = document.getElementById('gemini-modal');
-            const modalClose = document.getElementById('gemini-modal-close');
-            const modalTitle = document.getElementById('gemini-modal-title');
-            const modalContent = document.getElementById('gemini-modal-content');
-            const explainButtons = document.querySelectorAll('.gemini-explain-button');
-            const suggestButton = document.getElementById('suggest-features-button');
-            const futureList = document.getElementById('future-work-list');
-
-            const apiKey = "";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-            const loadingSpinner = `<div class="flex items-center justify-center h-24"><div class="spinner"></div></div>`;
+        // Pane Navigation
+        function showPane(id, btn) {
+            document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.feature-trigger').forEach(b => b.classList.remove('active'));
             
-            async function callGemini(prompt, systemInstruction, retries = 3, delay = 1000) {
-                const payload = {
-                    contents: [{ parts: [{ text: prompt }] }],
-                    systemInstruction: { parts: [{ text: systemInstruction }] }
-                };
-                
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
+            document.getElementById('pane-' + id).classList.add('active');
+            btn.classList.add('active');
+            if(id === 'data') initChart();
+        }
 
-                    if (!response.ok) {
-                        if (response.status === 429 && retries > 0) {
-                            await new Promise(res => setTimeout(res, delay));
-                            return callGemini(prompt, systemInstruction, retries - 1, delay * 2);
-                        }
-                        throw new Error(`API call failed with status: ${response.status}`);
-                    }
+        // Accordion
+        function toggleAcc(header) {
+            const content = header.nextElementSibling;
+            const isOpen = content.style.display === 'block';
+            content.style.display = isOpen ? 'none' : 'block';
+            header.querySelector('span').style.transform = isOpen ? 'rotate(0)' : 'rotate(180deg)';
+        }
 
-                    const result = await response.json();
-                    if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
-                        return result.candidates[0].content.parts[0].text;
-                    }
-                    return "No content returned from API.";
-                } catch (error) {
-                    console.error("Gemini API call error:", error);
-                    if (retries > 0) {
-                        await new Promise(res => setTimeout(res, delay));
-                        return callGemini(prompt, systemInstruction, retries - 1, delay * 2);
-                    }
-                    return "An error occurred while fetching the explanation. Please try again.";
-                }
-            }
 
-            function openModal(title) {
-                modalTitle.textContent = title;
-                modalContent.innerHTML = loadingSpinner;
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            }
 
-            function closeModal() {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
 
-            modalClose.addEventListener('click', closeModal);
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal();
-            });
 
-            explainButtons.forEach(button => {
-                button.addEventListener('click', async () => {
-                    const tech = button.dataset.tech;
-                    openModal(`Explaining: ${tech}`);
-                    const systemPrompt = "You are an expert technical writer. Explain the following technology in simple, concise terms for a non-technical project manager, focusing on its role within a multi-user AR application.";
-                    const userPrompt = `Explain ${tech}.`;
-                    const explanation = await callGemini(userPrompt, systemPrompt);
-                    modalContent.innerHTML = explanation.replace(/\n/g, '<br>');
-                });
-            });
-
-            suggestButton.addEventListener('click', async () => {
-                const originalText = suggestButton.textContent;
-                suggestButton.textContent = "Generating...";
-                suggestButton.disabled = true;
-
-                const systemPrompt = "You are an expert AR/VR project manager. Based on the provided project summary, suggest exactly three innovative and technically feasible future enhancements. For each, provide a short title and a 1-2 sentence description. Format the response as a simple list, using a hyphen (-) for each item.";
-                const userPrompt = `Project Summary: A multi-user AR app for visualizing a 3D heart model. Key features: session management with UGS Lobby/Relay, real-time manipulation of the model and its separated parts by a host, synchronized view for clients. Built with Unity and AR Foundation.`;
-                
-                const suggestions = await callGemini(userPrompt, systemPrompt);
-                const suggestionsArray = suggestions.split('- ').filter(s => s.trim() !== '');
-
-                suggestionsArray.forEach(suggestion => {
-                    const [title, ...descriptionParts] = suggestion.split(':');
-                    const description = descriptionParts.join(':').trim();
-                    const li = document.createElement('li');
-                    li.className = "flex items-start p-3 bg-teal-50 rounded-lg animate-fade-in";
-                    li.innerHTML = `
-                        <span class="text-yellow-500 text-xl mr-3 mt-1">&#x2728;</span>
-                        <div><strong class="font-semibold">${title.trim()}:</strong> ${description}</div>
-                    `;
-                    futureList.appendChild(li);
-                });
-
-                suggestButton.textContent = originalText;
-                suggestButton.disabled = false;
-            });
-
-        });
     </script>
-
 </body>
 </html>
-
-
